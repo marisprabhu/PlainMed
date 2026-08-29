@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17335E">
+<meta name="referrer" content="no-referrer">
+<title>PlainMed</title>
+<link rel="manifest" href="manifest.json">
+<!-- Declared explicitly so browsers stop probing /favicon.ico and logging a 404. -->
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="apple-touch-icon" href="logo.svg">
+<link rel="stylesheet" href="styles.css?v=2026-08-29d">
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand">
+    <img src="logo.svg" alt="" width="26" height="26">
+    <span class="brand-text">
+      <span class="mark">plain<em>med</em></span>
+      <span class="tag">Clear reports.</span>
+    </span>
+  </div>
+  <button id="restart" class="ghost" hidden>Clear</button>
+</header>
+
+<div class="notice" role="note">
+  Research prototype. Explains report content; does not diagnose or recommend
+  treatment. Confirm with a qualified clinician.
+</div>
+
+<main id="main">
+
+  <!-- ---------------------------------------------------------- consent -->
+  <!-- DPDP Rule 3: the notice stands on its own and is shown before any
+       processing, not linked from a footer. -->
+  <section id="view-consent" class="view">
+    <img class="lockup" src="logo-lockup.svg" alt="PlainMed — Powerful">
+
+    <div class="langbar">
+      <label for="lang">Language</label>
+      <select id="lang">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="ta">தமிழ்</option>
+        <option value="zh">中文</option>
+        <option value="nl">Nederlands</option>
+      </select>
+    </div>
+
+    <h1 id="nt-title">Before you continue</h1>
+    <p class="lede" id="nt-intro"></p>
+
+    <h2 class="nsub" id="nt-h-items">What we use, and why</h2>
+    <table class="ntable"><tbody id="nt-items"></tbody></table>
+
+    <h2 class="nsub" id="nt-h-keep">How long we keep it</h2>
+    <p class="ntext" id="nt-retention"></p>
+
+    <h2 class="nsub" id="nt-h-share">Who else sees it</h2>
+    <p class="ntext" id="nt-sharing"></p>
+
+    <h2 class="nsub" id="nt-h-rights">Your rights</h2>
+    <ul class="nlist" id="nt-rights"></ul>
+
+    <h2 class="nsub" id="nt-h-withdraw">Withdrawing consent</h2>
+    <p class="ntext" id="nt-withdraw"></p>
+
+    <h2 class="nsub" id="nt-h-complain">Questions and complaints</h2>
+    <p class="ntext" id="nt-grievance"></p>
+    <p class="ntext" id="nt-contact"></p>
+    <p class="ntext" id="nt-board"></p>
+
+    <div class="nwarn" id="nt-advice"></div>
+
+    <div class="gates">
+      <label class="gate"><input type="checkbox" id="agree-age">
+        <span id="nt-age"></span></label>
+      <label class="gate"><input type="checkbox" id="agree-consent">
+        <span id="nt-agree">I have read this notice and I consent to my report
+        being processed as described.</span></label>
+    </div>
+
+    <button id="consent-go" class="cta" disabled>Agree and continue</button>
+  </section>
+
+  <!-- ---------------------------------------------------------- capture -->
+  <section id="view-capture" class="view" hidden>
+    <h1>Scan your report</h1>
+    <p class="lede">
+      Take a photo of your blood-test report. It is processed and then
+      discarded &mdash; nothing is stored.
+    </p>
+
+    <button id="open-camera" class="cta" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22">
+        <path d="M4 7h3l1.5-2h7L17 7h3v12H4z" fill="none" stroke="currentColor"
+              stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor"
+                stroke-width="1.6"/>
+      </svg>
+      Take a photo
+    </button>
+    <!-- Fallback for browsers without getUserMedia, and for permission
+         denial. On mobile `capture` opens the native camera; on desktop it
+         is ignored and this is a file picker, which is why the live camera
+         above exists. -->
+    <input id="camera" type="file" accept="image/*" capture="environment" hidden>
+
+    <label class="cta secondary" for="gallery">Choose an existing photo</label>
+    <input id="gallery" type="file" accept="image/*" hidden>
+
+    <details class="alt">
+      <summary>Or enter the report another way</summary>
+      <label class="cta secondary block" for="pdf">Upload a text-based PDF</label>
+      <input id="pdf" type="file" accept="application/pdf" hidden>
+      <textarea id="paste" rows="6"
+        placeholder="Or paste the report text&#10;Hemoglobin: 13.5 g/dL (13.0 - 17.0)"></textarea>
+      <button id="paste-go" class="cta secondary block">Read pasted text</button>
+    </details>
+
+    <ul class="tips">
+      <li>Lay the report flat and fill the frame.</li>
+      <li>Avoid shadows and glare from the flash.</li>
+      <li>One page at a time.</li>
+    </ul>
+
+    <p class="consent">
+      You consented on this device.
+      <button type="button" id="review-notice" class="linkish">Read the notice again</button>
+      &middot;
+      <button type="button" id="withdraw" class="linkish">Withdraw consent</button>
+    </p>
+  </section>
+
+  <!-- ----------------------------------------------------------- camera -->
+  <section id="view-camera" class="view" hidden>
+    <div class="cam-frame">
+      <video id="cam-video" playsinline muted autoplay></video>
+      <div class="cam-guide" aria-hidden="true"></div>
+    </div>
+    <p class="cam-hint">Fill the frame with the report. Keep it flat and well lit.</p>
+    <div class="cam-controls">
+      <button id="cam-cancel" class="cta secondary">Cancel</button>
+      <button id="cam-shoot" class="cta">Capture</button>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- review -->
+  <section id="view-review" class="view" hidden>
+    <h1>Check what we read</h1>
+    <p class="lede" id="review-lede"></p>
+    <div id="review-warn" class="warn" hidden></div>
+    <div id="review-list" class="rows"></div>
+    <div class="actions">
+      <button id="back" class="cta secondary">Start over</button>
+      <button id="explain" class="cta">This is correct &mdash; explain it</button>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- results -->
+  <section id="view-results" class="view" hidden>
+    <h1>Your report explained</h1>
+    <div id="issues"></div>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-panel="panel-cards" role="tab">Explanation</button>
+      <button class="tab" data-panel="panel-source" role="tab">Report</button>
+      <button class="tab" data-panel="panel-ask" role="tab">Ask your doctor</button>
+    </nav>
+
+    <div id="panel-cards" class="panel"></div>
+    <div id="panel-source" class="panel" hidden></div>
+    <div id="panel-ask" class="panel" hidden></div>
+
+    <button id="done" class="cta secondary block">Clear and start over</button>
+  </section>
+
+  <!-- ---------------------------------------------------------- overlay -->
+  <div id="busy" class="busy" hidden>
+    <div class="spinner" aria-hidden="true"></div>
+    <p id="busy-text">Reading your report…</p>
+  </div>
+
+  <div id="error" class="error" hidden>
+    <p id="error-text"></p>
+    <button id="error-close" class="cta secondary">Try again</button>
+    <!-- Always leave one escape hatch that cannot itself fail. -->
+    <button id="error-reload" class="linkish">Reload the page</button>
+    <p class="build" id="build-tag"></p>
+  </div>
+
+</main>
+
+<footer class="foot">
+  <span id="foot-status">Processed, never stored.</span>
+</footer>
+
+<script src="app.js?v=2026-08-29d"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+SYNTHETIC DATA - NOT A REAL PATIENT
+Complete Blood Count
+
+Hemoglobin: 13.5 g/dL (13.0 - 17.0)
+Hematocrit: 41 % (40 - 52)
+WBC: 11.8 x10^9/L (4.0 - 11.0) H
+RBC: 4.9 x10^12/L (4.5 - 5.9)
+Platelets: 250 x10^9/L (150 - 400)
+MCV: 88 fL (80 - 100)

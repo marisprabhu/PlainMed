@@ -1,0 +1,8 @@
+SYNTHETIC DATA - NOT A REAL PATIENT
+Thyroid and Iron Studies
+
+TSH: 4.9 mIU/L (0.4 - 4.0) H
+Ferritin: 18 ug/L (30 - 400) L
+Iron: 10 umol/L (11 - 32) Low
+Transferrin saturation index: 14 % (20 - 50) L
+Reticulocyte hemoglobin equivalent: 25 pg

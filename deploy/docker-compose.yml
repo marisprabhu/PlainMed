@@ -1,0 +1,37 @@
+# Local GPU run, closest thing to production you can put on one machine.
+#
+#   docker compose -f deploy/docker-compose.yml up --build
+#
+# Model weights are mounted read-only from the host rather than baked into
+# the image: they are gated by Google's licence and must not be redistributed
+# inside a container you push to a registry.
+
+services:
+  plainmed:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: plainmed:local
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ../models:/models:ro
+    environment:
+      PLAINMED_BACKEND: "auto"
+      PLAINMED_OCR_BACKEND: "auto"
+      PLAINMED_LOG_LEVEL: "INFO"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # The app writes nothing; a read-only root filesystem makes that
+    # structural rather than aspirational. tmpfs covers library scratch space.
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped

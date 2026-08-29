@@ -1,0 +1,74 @@
+# Two-tier deployment: PHI stays on the trusted tier, the GPU sees only
+# de-identified values. See ARCHITECTURE.md for why this is the shape.
+#
+# Locally both run on one host, which proves the wiring but NOT the
+# compliance property - a single host handling both is a single host
+# handling PHI. In production these are separate deployments on separate
+# providers, and only the trusted tier needs a BAA.
+
+services:
+  # ---------------------------------------------------------------- trusted
+  # Handles the photo, OCR, parsing, de-identification, validation.
+  # CPU only. This is the tier that requires a BAA-covered host.
+  trusted:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: plainmed-trusted:local
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      # OCR runs here because its input is the photo, which is PHI.
+      PLAINMED_OCR_BACKEND: "rapidocr"
+      # Narrative generation is delegated to the model tier.
+      PLAINMED_BACKEND: "remote"
+      PLAINMED_MODEL_TIER_URL: "http://model:8001"
+      PLAINMED_ENV: "production"
+      # Must be set: sessions break across restarts and replicas without it.
+      PLAINMED_SECRET_KEY: "${PLAINMED_SECRET_KEY:?set PLAINMED_SECRET_KEY}"
+      PLAINMED_RATE_PER_MIN: "20"
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - model
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------ model
+  # Receives de-identified lab values only. No BAA required, which is what
+  # makes a commodity GPU acceptable here.
+  #
+  # In production: bind to a private network, never the public internet, and
+  # authenticate the trusted tier to it.
+  model:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: plainmed-model:local
+    expose:
+      - "8001"
+    environment:
+      PLAINMED_BACKEND: "medgemma"
+      # 4-bit brings a 4B model onto a 16 GB commodity card. Measure the
+      # quality cost with scripts/benchmark_model.py before shipping it.
+      PLAINMED_QUANTIZATION: "4bit"
+      PLAINMED_OCR_BACKEND: "none"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    volumes:
+      - ../models:/models:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped

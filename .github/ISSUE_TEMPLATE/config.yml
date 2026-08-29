@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/OWNER/plainmed/security/advisories/new
+    about: Please report security problems privately, never as a public issue.
+  - name: Clinical review
+    url: https://github.com/OWNER/plainmed/issues/new?labels=clinical
+    about: If you are a clinician willing to review the glossary, start here.

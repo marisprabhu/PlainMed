@@ -1,0 +1,10 @@
+SYNTHETIC DATA - NOT A REAL PATIENT
+Liver Function Tests
+
+ALT: 22 U/L (7 - 56)
+AST: 25 U/L (10 - 40)
+ALP: 70 U/L (44 - 147)
+GGT: 30 U/L (8 - 61)
+Total Bilirubin: 0.8 mg/dL (0.3 - 1.2)
+Albumin: 4.4 g/dL (3.5 - 5.0)
+Total Protein: 7.1 g/dL (6.0 - 8.3)

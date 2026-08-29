@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plainmed"
+version = "0.1.0"
+description = "PlainMed - an offline medical-report explanation assistant. Clear reports. Private by design."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = [
+    "pydantic>=2.5",
+    "pypdf>=4.0",
+    "pillow>=10.0",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "python-multipart>=0.0.9",
+    # ONNX OCR: pip-installable, no system deps, runs on CPU. Production
+    # swaps in the Paddle GPU backend via the "gpu" extra.
+    "rapidocr-onnxruntime>=1.2.3",
+]
+
+[project.optional-dependencies]
+# Local LLM inference (MedGemma). Not required: PlainMed falls back to its
+# deterministic explanation engine when these are absent.
+llm = [
+    "torch>=2.3",
+    "transformers>=4.50",
+    "accelerate>=0.30",
+]
+# Everything needed to serve on an NVIDIA GPU: local MedGemma plus the
+# higher-accuracy OCR engine.
+gpu = [
+    "torch>=2.3",
+    "transformers>=4.50",
+    "accelerate>=0.30",
+    # 4-bit / 8-bit weights, so a 4B model fits a 16 GB commodity card.
+    "bitsandbytes>=0.43",
+    "paddleocr>=2.7",
+    "paddlepaddle-gpu>=2.6",
+]
+# The original desktop UI. Not needed to run the API or the mobile app.
+desktop = [
+    "streamlit>=1.36",
+]
+dev = [
+    "pytest>=8.0",
+    # Starlette's TestClient deprecates httpx in favour of httpx2; pinning
+    # it keeps `pytest` output clean, which matters because the demo runs
+    # the suite live in front of an audience.
+    "httpx2>=2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools.package-data]
+"plainmed.glossary" = ["data/*.json"]

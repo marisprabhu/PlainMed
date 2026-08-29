@@ -1,0 +1,90 @@
+name: CI
+
+# The three checks below are the project's substantive claims. They run on
+# every push because a privacy guarantee that is not enforced automatically
+# is a guarantee that quietly stops being true.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Tests
+        run: python -m pytest -q
+
+  proofs:
+    # Kept separate from the test matrix so a failure here is unmistakable:
+    # these are the claims the README makes to users about their data.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Runs with every network socket blocked
+        run: python scripts/offline_check.py
+
+      - name: Writes nothing to disk, logs no report content
+        run: python scripts/retention_check.py
+
+      - name: No identifier reaches the model tier
+        run: python scripts/deident_check.py
+
+  no-telemetry:
+    # A dependency that ships data off-host would silently invalidate the
+    # retention and de-identification claims above, and no test would catch
+    # it. Fail the build instead.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Refuse known telemetry and error-reporting SDKs
+        run: |
+          BANNED="sentry-sdk opentelemetry-sdk newrelic ddtrace elastic-apm scout-apm bugsnag rollbar analytics-python posthog mixpanel segment-analytics-python"
+          INSTALLED=$(pip freeze | cut -d= -f1 | tr 'A-Z' 'a-z')
+          FOUND=""
+          for pkg in $BANNED; do
+            if echo "$INSTALLED" | grep -qx "$pkg"; then FOUND="$FOUND $pkg"; fi
+          done
+          if [ -n "$FOUND" ]; then
+            echo "::error::Telemetry dependency present:$FOUND"
+            echo "These capture request bodies by default. PlainMed processes"
+            echo "medical reports; a body-capturing agent would send them"
+            echo "off-host and break the guarantees in the README."
+            exit 1
+          fi
+          echo "No telemetry dependencies found."

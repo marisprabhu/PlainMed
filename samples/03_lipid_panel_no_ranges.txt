@@ -1,0 +1,7 @@
+SYNTHETIC DATA - NOT A REAL PATIENT
+Lipid Panel
+
+Total Cholesterol: 212 mg/dL
+Triglycerides: 145 mg/dL
+HDL Cholesterol: 48 mg/dL
+LDL Cholesterol: 135 mg/dL

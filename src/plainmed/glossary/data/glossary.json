@@ -1,0 +1,246 @@
+{
+  "version": "0.1.0",
+  "note": "Reviewed plain-language descriptions of what common blood tests measure. Descriptive only: no diagnostic or treatment statements.",
+  "entries": [
+    {
+      "key": "hemoglobin",
+      "display_name": "Hemoglobin",
+      "aliases": ["hgb", "hb", "haemoglobin"],
+      "definition": "Hemoglobin is the protein inside red blood cells that carries oxygen. This test measures how much hemoglobin is in the blood."
+    },
+    {
+      "key": "hematocrit",
+      "display_name": "Hematocrit",
+      "aliases": ["hct", "haematocrit", "packed cell volume", "pcv"],
+      "definition": "Hematocrit measures the proportion of the blood that is made up of red blood cells, expressed as a percentage."
+    },
+    {
+      "key": "wbc",
+      "display_name": "White blood cell count (WBC)",
+      "aliases": ["white blood cell count", "white blood cells", "leukocytes", "leucocytes", "white cell count"],
+      "definition": "White blood cells are part of the immune system. This test counts how many white blood cells are in a given volume of blood."
+    },
+    {
+      "key": "rbc",
+      "display_name": "Red blood cell count (RBC)",
+      "aliases": ["red blood cell count", "red blood cells", "erythrocytes", "red cell count"],
+      "definition": "Red blood cells carry oxygen from the lungs to the rest of the body. This test counts how many red blood cells are in a given volume of blood."
+    },
+    {
+      "key": "platelets",
+      "display_name": "Platelet count",
+      "aliases": ["platelet count", "plt", "thrombocytes"],
+      "definition": "Platelets are small cell fragments that help blood clot. This test counts how many platelets are in a given volume of blood."
+    },
+    {
+      "key": "mcv",
+      "display_name": "Mean corpuscular volume (MCV)",
+      "aliases": ["mean corpuscular volume", "mean cell volume"],
+      "definition": "MCV measures the average size of the red blood cells."
+    },
+    {
+      "key": "mch",
+      "display_name": "Mean corpuscular hemoglobin (MCH)",
+      "aliases": ["mean corpuscular hemoglobin"],
+      "definition": "MCH measures the average amount of hemoglobin inside each red blood cell."
+    },
+    {
+      "key": "mchc",
+      "display_name": "Mean corpuscular hemoglobin concentration (MCHC)",
+      "aliases": ["mean corpuscular hemoglobin concentration"],
+      "definition": "MCHC measures the average concentration of hemoglobin within the red blood cells."
+    },
+    {
+      "key": "rdw",
+      "display_name": "Red cell distribution width (RDW)",
+      "aliases": ["red cell distribution width", "rdw-cv", "rdw-sd"],
+      "definition": "RDW measures how much the red blood cells vary in size from one another."
+    },
+    {
+      "key": "neutrophils",
+      "display_name": "Neutrophils",
+      "aliases": ["neutrophil count", "neut", "anc", "absolute neutrophil count"],
+      "definition": "Neutrophils are the most common type of white blood cell. This test reports how many neutrophils are present, as a count or as a percentage of all white blood cells."
+    },
+    {
+      "key": "lymphocytes",
+      "display_name": "Lymphocytes",
+      "aliases": ["lymphocyte count", "lymphs"],
+      "definition": "Lymphocytes are a type of white blood cell. This test reports how many lymphocytes are present, as a count or as a percentage of all white blood cells."
+    },
+    {
+      "key": "monocytes",
+      "display_name": "Monocytes",
+      "aliases": ["monocyte count", "monos"],
+      "definition": "Monocytes are a type of white blood cell. This test reports how many monocytes are present, as a count or as a percentage of all white blood cells."
+    },
+    {
+      "key": "eosinophils",
+      "display_name": "Eosinophils",
+      "aliases": ["eosinophil count", "eos"],
+      "definition": "Eosinophils are a type of white blood cell. This test reports how many eosinophils are present, as a count or as a percentage of all white blood cells."
+    },
+    {
+      "key": "basophils",
+      "display_name": "Basophils",
+      "aliases": ["basophil count", "basos"],
+      "definition": "Basophils are the least common type of white blood cell. This test reports how many basophils are present, as a count or as a percentage of all white blood cells."
+    },
+    {
+      "key": "glucose",
+      "display_name": "Glucose",
+      "aliases": ["blood glucose", "fasting glucose", "glucose fasting", "blood sugar"],
+      "definition": "Glucose is the main sugar the body uses for energy. This test measures the amount of glucose in the blood at the time the sample was taken."
+    },
+    {
+      "key": "hba1c",
+      "display_name": "Hemoglobin A1c (HbA1c)",
+      "aliases": ["hemoglobin a1c", "a1c", "glycated hemoglobin", "glycosylated hemoglobin"],
+      "definition": "HbA1c reflects the average blood glucose level over roughly the previous two to three months, by measuring how much glucose has attached to hemoglobin."
+    },
+    {
+      "key": "creatinine",
+      "display_name": "Creatinine",
+      "aliases": ["serum creatinine", "creat"],
+      "definition": "Creatinine is a waste product from normal muscle activity that the kidneys filter out of the blood. This test measures its level in the blood."
+    },
+    {
+      "key": "egfr",
+      "display_name": "Estimated glomerular filtration rate (eGFR)",
+      "aliases": ["estimated glomerular filtration rate", "gfr", "gfr estimated"],
+      "definition": "eGFR is a calculated estimate of how much blood the kidneys filter per minute, derived from the creatinine result together with other factors."
+    },
+    {
+      "key": "bun",
+      "display_name": "Blood urea nitrogen (BUN)",
+      "aliases": ["blood urea nitrogen", "urea", "urea nitrogen"],
+      "definition": "Urea is a waste product formed when the body breaks down protein; the kidneys remove it from the blood. This test measures its level in the blood."
+    },
+    {
+      "key": "sodium",
+      "display_name": "Sodium",
+      "aliases": ["na", "serum sodium"],
+      "definition": "Sodium is an electrolyte that helps regulate the body's fluid balance, nerves, and muscles. This test measures its concentration in the blood."
+    },
+    {
+      "key": "potassium",
+      "display_name": "Potassium",
+      "aliases": ["k", "serum potassium"],
+      "definition": "Potassium is an electrolyte important for nerve and muscle function, including the heart. This test measures its concentration in the blood."
+    },
+    {
+      "key": "chloride",
+      "display_name": "Chloride",
+      "aliases": ["cl", "serum chloride"],
+      "definition": "Chloride is an electrolyte that works with sodium and other electrolytes to maintain fluid and acid-base balance. This test measures its concentration in the blood."
+    },
+    {
+      "key": "calcium",
+      "display_name": "Calcium",
+      "aliases": ["serum calcium", "total calcium", "ca"],
+      "definition": "Calcium is a mineral involved in bones, muscles, nerves, and blood clotting. This test measures the amount of calcium in the blood, which is separate from the amount stored in bone."
+    },
+    {
+      "key": "alt",
+      "display_name": "Alanine aminotransferase (ALT)",
+      "aliases": ["alanine aminotransferase", "sgpt", "alat"],
+      "definition": "ALT is an enzyme found mostly in the liver. This test measures the amount of ALT in the blood."
+    },
+    {
+      "key": "ast",
+      "display_name": "Aspartate aminotransferase (AST)",
+      "aliases": ["aspartate aminotransferase", "sgot", "asat"],
+      "definition": "AST is an enzyme found in the liver and several other tissues, including muscle. This test measures the amount of AST in the blood."
+    },
+    {
+      "key": "alp",
+      "display_name": "Alkaline phosphatase (ALP)",
+      "aliases": ["alkaline phosphatase", "alk phos"],
+      "definition": "ALP is an enzyme found mainly in the liver and bones. This test measures the amount of ALP in the blood."
+    },
+    {
+      "key": "ggt",
+      "display_name": "Gamma-glutamyl transferase (GGT)",
+      "aliases": ["gamma-glutamyl transferase", "gamma gt", "ggtp"],
+      "definition": "GGT is an enzyme found mainly in the liver. This test measures the amount of GGT in the blood."
+    },
+    {
+      "key": "bilirubin",
+      "display_name": "Bilirubin",
+      "aliases": ["total bilirubin", "bilirubin total", "tbil"],
+      "definition": "Bilirubin is a yellow substance produced when red blood cells break down; the liver processes it. This test measures its level in the blood."
+    },
+    {
+      "key": "albumin",
+      "display_name": "Albumin",
+      "aliases": ["serum albumin"],
+      "definition": "Albumin is the most abundant protein in blood plasma, made by the liver. It helps keep fluid in the bloodstream and carries various substances."
+    },
+    {
+      "key": "total_protein",
+      "display_name": "Total protein",
+      "aliases": ["protein total", "serum protein"],
+      "definition": "This test measures the combined amount of all proteins in the blood, mainly albumin and globulins."
+    },
+    {
+      "key": "cholesterol_total",
+      "display_name": "Total cholesterol",
+      "aliases": ["cholesterol", "cholesterol total", "total chol"],
+      "definition": "Cholesterol is a fatty substance used to build cells and certain hormones. This test measures the total amount of cholesterol carried in the blood."
+    },
+    {
+      "key": "ldl",
+      "display_name": "LDL cholesterol",
+      "aliases": ["ldl", "ldl-c", "ldl cholesterol", "low density lipoprotein"],
+      "definition": "LDL is one of the particles that carries cholesterol in the blood, often described in reports as a target for monitoring. This test measures the cholesterol carried by LDL particles."
+    },
+    {
+      "key": "hdl",
+      "display_name": "HDL cholesterol",
+      "aliases": ["hdl", "hdl-c", "hdl cholesterol", "high density lipoprotein"],
+      "definition": "HDL is one of the particles that carries cholesterol in the blood. This test measures the cholesterol carried by HDL particles."
+    },
+    {
+      "key": "triglycerides",
+      "display_name": "Triglycerides",
+      "aliases": ["trigs", "tg"],
+      "definition": "Triglycerides are a type of fat the body uses to store and transport energy. This test measures their level in the blood."
+    },
+    {
+      "key": "tsh",
+      "display_name": "Thyroid-stimulating hormone (TSH)",
+      "aliases": ["thyroid stimulating hormone", "thyrotropin"],
+      "definition": "TSH is a hormone from the pituitary gland that signals the thyroid gland to produce thyroid hormones. This test measures the TSH level in the blood."
+    },
+    {
+      "key": "ferritin",
+      "display_name": "Ferritin",
+      "aliases": ["serum ferritin"],
+      "definition": "Ferritin is a protein that stores iron. Its blood level is commonly used as an indicator of the body's iron stores."
+    },
+    {
+      "key": "crp",
+      "display_name": "C-reactive protein (CRP)",
+      "aliases": ["c-reactive protein", "c reactive protein", "hs-crp"],
+      "definition": "CRP is a protein made by the liver whose level rises with inflammation in the body. This test measures the CRP level in the blood."
+    },
+    {
+      "key": "vitamin_d",
+      "display_name": "Vitamin D (25-hydroxyvitamin D)",
+      "aliases": ["vitamin d", "25-oh vitamin d", "25-hydroxyvitamin d", "vitamin d 25-oh"],
+      "definition": "This test measures the storage form of vitamin D in the blood. Vitamin D is involved in calcium absorption and bone health."
+    },
+    {
+      "key": "vitamin_b12",
+      "display_name": "Vitamin B12",
+      "aliases": ["b12", "cobalamin", "vit b12"],
+      "definition": "Vitamin B12 is needed to make red blood cells and to keep nerves working. This test measures its level in the blood."
+    },
+    {
+      "key": "iron",
+      "display_name": "Iron (serum)",
+      "aliases": ["serum iron", "fe"],
+      "definition": "This test measures the amount of iron circulating in the blood at the time of the sample. Iron is needed to make hemoglobin."
+    }
+  ]
+}
