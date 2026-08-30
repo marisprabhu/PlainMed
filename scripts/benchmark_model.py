@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import statistics
 import sys
+import traceback
 import time
 from pathlib import Path
 
@@ -87,13 +88,23 @@ def main() -> int:
 
     latencies: list[float] = []
     generated = kept_total = 0
+    failures_shown = False
 
     for sample, doc in zip(samples, docs):
         started = time.perf_counter()
         try:
             items = backend.generate(doc)
         except Exception as exc:
-            print(f"  {sample.name}: generation failed - {exc}")
+            # An exception with no message printed as nothing at all, which is
+            # the least useful failure mode possible. Show the type and, for
+            # the first failure, the full traceback.
+            detail = str(exc) or "(no message)"
+            print(f"  {sample.name}: generation failed - {type(exc).__name__}: {detail}")
+            if not failures_shown:
+                failures_shown = True
+                print("\n--- traceback for the first failure ---")
+                traceback.print_exc()
+                print("--- end traceback ---\n")
             continue
         elapsed = (time.perf_counter() - started) * 1000
         latencies.append(elapsed)

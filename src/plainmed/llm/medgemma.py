@@ -129,6 +129,17 @@ class MedGemmaBackend:
                 "The 'llm' extra is not installed (pip install .[llm])."
             ) from exc
 
+        # MedGemma 1.5 is a multimodal (Gemma 3) checkpoint. Loading it with
+        # AutoModelForCausalLM appears to succeed and then fails at generate,
+        # so try the image-text class first and fall back for text-only
+        # checkpoints.
+        try:
+            from transformers import AutoModelForImageTextToText
+
+            model_classes = [AutoModelForImageTextToText, AutoModelForCausalLM]
+        except ImportError:
+            model_classes = [AutoModelForCausalLM]
+
         load_kwargs = {
             "local_files_only": True,
             "torch_dtype": "auto",
@@ -155,9 +166,18 @@ class MedGemmaBackend:
             self._tokenizer = AutoTokenizer.from_pretrained(
                 str(config.model_dir), local_files_only=True
             )
-            self._model = AutoModelForCausalLM.from_pretrained(
-                str(config.model_dir), **load_kwargs
-            )
+            self._model = None
+            errors = []
+            for cls in model_classes:
+                try:
+                    self._model = cls.from_pretrained(
+                        str(config.model_dir), **load_kwargs
+                    )
+                    break
+                except Exception as exc:
+                    errors.append(f"{cls.__name__}: {type(exc).__name__}: {exc}")
+            if self._model is None:
+                raise RuntimeError("; ".join(errors))
         except Exception as exc:  # model files unreadable, OOM, etc.
             raise ModelUnavailableError(f"Could not load MedGemma: {exc}") from exc
 
@@ -208,21 +228,48 @@ class MedGemmaBackend:
         import torch
 
         prompt = _build_prompt(doc)
-        messages = [{"role": "user", "content": prompt}]
-        inputs = self._tokenizer.apply_chat_template(
-            messages,
-            add_generation_prompt=True,
-            return_tensors="pt",
-        ).to(self._model.device)
+
+        # A multimodal chat template expects content as a list of typed parts,
+        # not a bare string, and the processor - not the tokenizer - is what
+        # knows how to render it. Fall back to the tokenizer for text-only
+        # checkpoints.
+        templater = self._processor or self._tokenizer
+        messages = [
+            {"role": "user", "content": [{"type": "text", "text": prompt}]}
+        ]
+        try:
+            inputs = templater.apply_chat_template(
+                messages,
+                add_generation_prompt=True,
+                tokenize=True,
+                return_dict=True,
+                return_tensors="pt",
+            )
+        except (TypeError, ValueError):
+            # Older templates take a plain string and return a bare tensor.
+            inputs = templater.apply_chat_template(
+                [{"role": "user", "content": prompt}],
+                add_generation_prompt=True,
+                return_tensors="pt",
+            )
+
+        # apply_chat_template returns either a mapping or a bare tensor
+        # depending on the transformers version and the template.
+        if hasattr(inputs, "to") and not hasattr(inputs, "keys"):
+            inputs = {"input_ids": inputs}
+        inputs = {k: v.to(self._model.device) for k, v in dict(inputs).items()}
+        prompt_len = inputs["input_ids"].shape[-1]
 
         with torch.inference_mode():
             output_ids = self._model.generate(
-                inputs,
+                **inputs,
                 max_new_tokens=self.config.max_new_tokens,
                 do_sample=False,
             )
-        raw = self._tokenizer.decode(
-            output_ids[0][inputs.shape[-1] :], skip_special_tokens=True
+
+        decoder = self._processor or self._tokenizer
+        raw = decoder.decode(
+            output_ids[0][prompt_len:], skip_special_tokens=True
         )
 
         payload = _extract_json(raw)
