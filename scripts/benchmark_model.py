@@ -142,11 +142,35 @@ def main() -> int:
         return 0
 
     median_s = statistics.median(latencies) / 1000
-    print(f"One GPU sustains roughly {1 / median_s:.1f} reports/second at")
-    print("concurrency 1. Re-run under realistic concurrency before sizing:")
-    print("throughput, not single-request latency, sets your instance count.")
+    per_hour = 3600 / median_s
+    # Reports/second reads as "0.0" for anything slower than ~10s, which
+    # looks like a broken metric rather than a slow one.
+    if per_hour < 600:
+        print(f"One GPU sustains roughly {per_hour:.0f} reports/hour "
+              f"({median_s:.1f}s each) at concurrency 1.")
+    else:
+        print(f"One GPU sustains roughly {1 / median_s:.1f} reports/second "
+              "at concurrency 1.")
+    print("Re-run under realistic concurrency before sizing: throughput, not")
+    print("single-request latency, sets your instance count.")
+
+    if median_s > 20:
+        print(
+            f"
+NOTE: {median_s:.0f}s per report is slow for a 4B model. On a "
+            "Turing card (T4) bitsandbytes 4-bit has no native kernel and "
+            "dequantizes constantly - 8-bit is often faster there despite "
+            "using more memory. This gap is the argument for TensorRT-LLM."
+        )
     if peak:
         print(f"Peak {peak:.1f} GB fits a {'16' if peak < 13 else '24'} GB card.")
+    if generated < 10:
+        print(
+            f"
+CAUTION: only {generated} statements were generated, so the "
+            "rejection rate is not yet a meaningful figure. Run more reports "
+            "before putting a percentage on a slide."
+        )
     if rejection_rate > 20:
         print(
             f"\nWARNING: {rejection_rate:.0f}% of statements failed validation. "
