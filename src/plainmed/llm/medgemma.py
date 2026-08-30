@@ -17,6 +17,7 @@ Hard rules:
 from __future__ import annotations
 
 import json
+import re
 from typing import List
 
 from pydantic import BaseModel, Field, ValidationError
@@ -97,17 +98,63 @@ def _quantization_config(mode: str):
 
 
 def _extract_json(raw: str) -> dict:
-    """Pull the first JSON object out of the model output."""
-    start = raw.find("{")
-    if start == -1:
-        raise ModelOutputError("Model output contained no JSON object.")
+    """Pull the answer object out of the model output.
+
+    Taking the first "{" is not good enough. The system prompt shows the
+    required shape as literal JSON, so any echo of the instructions puts a
+    decoy object ahead of the real answer; models also wrap output in
+    markdown fences, and small models sometimes emit a short preamble.
+
+    So: strip fences, then try every "{" in turn and keep the first one that
+    both parses and looks like the expected response.
+    """
+    text = raw.strip()
+
+    # ```json ... ```  or  ``` ... ```
+    if "```" in text:
+        fenced = re.findall(r"```(?:json)?\s*(.*?)```", text, re.DOTALL)
+        if fenced:
+            text = max(fenced, key=len).strip()
+
     decoder = json.JSONDecoder()
-    snippet = raw[start:]
-    try:
-        payload, _ = decoder.raw_decode(snippet)
-        return payload
-    except json.JSONDecodeError as exc:
-        raise ModelOutputError(f"Model output was not valid JSON: {exc}") from exc
+    candidates = []
+    for start in (i for i, ch in enumerate(text) if ch == "{"):
+        try:
+            payload, _ = decoder.raw_decode(text[start:])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            candidates.append(payload)
+
+    def is_placeholder(payload: dict) -> bool:
+        """The prompt's own example, echoed back."""
+        items = payload.get("items")
+        if not isinstance(items, list) or not items:
+            return False
+        first = items[0]
+        return isinstance(first, dict) and "<" in str(first.get("text", ""))
+
+    # Search backwards: any echo of the instructions comes first, the actual
+    # answer comes last. Taking the earliest match returns the decoy.
+    for payload in reversed(candidates):
+        if (
+            isinstance(payload.get("items"), list)
+            and payload["items"]
+            and not is_placeholder(payload)
+        ):
+            return payload
+    for payload in reversed(candidates):
+        if "items" in payload and not is_placeholder(payload):
+            return payload
+    if candidates:
+        return candidates[-1]
+
+    # Nothing parsed. Show what the model said - without it, this failure is
+    # undiagnosable, which cost real time to learn.
+    excerpt = " ".join(raw.split())[:300] or "(empty output)"
+    raise ModelOutputError(
+        f"Model output contained no usable JSON object. Model said: {excerpt!r}"
+    )
 
 
 class MedGemmaBackend:
@@ -276,7 +323,9 @@ class MedGemmaBackend:
         try:
             response = _ModelResponse.model_validate(payload)
         except ValidationError as exc:
+            excerpt = " ".join(raw.split())[:300]
             raise ModelOutputError(
-                f"Model output did not match the expected schema: {exc}"
+                f"Model output did not match the expected schema: {exc}. "
+                f"Model said: {excerpt!r}"
             ) from exc
         return response.items
