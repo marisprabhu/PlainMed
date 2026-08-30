@@ -156,8 +156,7 @@ def main() -> int:
 
     if median_s > 20:
         print(
-            f"
-NOTE: {median_s:.0f}s per report is slow for a 4B model. On a "
+            f"\nNOTE: {median_s:.0f}s per report is slow for a 4B model. On a "
             "Turing card (T4) bitsandbytes 4-bit has no native kernel and "
             "dequantizes constantly - 8-bit is often faster there despite "
             "using more memory. This gap is the argument for TensorRT-LLM."
@@ -166,8 +165,7 @@ NOTE: {median_s:.0f}s per report is slow for a 4B model. On a "
         print(f"Peak {peak:.1f} GB fits a {'16' if peak < 13 else '24'} GB card.")
     if generated < 10:
         print(
-            f"
-CAUTION: only {generated} statements were generated, so the "
+            f"\nCAUTION: only {generated} statements were generated, so the "
             "rejection rate is not yet a meaningful figure. Run more reports "
             "before putting a percentage on a slide."
         )
