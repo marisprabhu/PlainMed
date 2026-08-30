@@ -1,6 +1,16 @@
-# PlainMed
+<div align="center">
 
-**Clear reports. Private by design.**
+<!-- GitHub swaps these on its light/dark theme. The navy wordmark is
+     unreadable on a dark ground, hence the second variant. -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/assets/logo.svg">
+  <img src="docs/assets/logo.svg" alt="PlainMed — Powerful" width="300">
+</picture>
+
+### Clear reports. Private by design.
+
+</div>
 
 PlainMed turns blood-test reports into plain-language, source-linked
 explanations. Photograph a report on your phone and get back an explanation

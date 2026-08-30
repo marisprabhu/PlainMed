@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 210" role="img" aria-label="PlainMed — Powerful">
+  <!-- Dark-theme variant. The navy of the light lockup disappears against a
+       dark ground, so the wordmark and rules are lifted to near-white and the
+       mark's gradient runs bright blue to a lighter slate-blue. -->
+  <defs>
+    <linearGradient id="lgd" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#4D9BEA"/>
+      <stop offset="1" stop-color="#A8C6E8"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(133 2) scale(0.94)">
+    <path fill="url(#lgd)" fill-rule="evenodd" d="
+      M20 10 H55 C69 10 78 19.5 78 31 C78 42.5 69 52 55 52 H39 V90 H20 Z
+      M41 20 H51 V29 H60 V39 H51 V48 H41 V39 H32 V29 H41 Z"/>
+  </g>
+
+  <text x="180" y="150" text-anchor="middle"
+        font-family="'IBM Plex Sans', 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="46" font-weight="500" letter-spacing="-1.2">
+    <tspan fill="#E8EFF7">plain</tspan><tspan fill="#4D9BEA">med</tspan>
+  </text>
+
+  <line x1="86" y1="186" x2="128" y2="186" stroke="#8FA9C4" stroke-width="1.3"/>
+  <text x="180" y="191" text-anchor="middle"
+        font-family="'IBM Plex Sans', 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" letter-spacing="6.5" fill="#8FA9C4">POWERFUL</text>
+  <line x1="232" y1="186" x2="274" y2="186" stroke="#8FA9C4" stroke-width="1.3"/>
+</svg>
