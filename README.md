@@ -30,6 +30,13 @@ Two deployment modes share one validated core:
   <img alt="licence" src="https://img.shields.io/badge/licence-Apache--2.0-1565C0">
 </p>
 
+<p>
+  <a href="https://colab.research.google.com/github/marisprabhu/plainmed/blob/main/notebooks/benchmark_colab.ipynb">
+    <img alt="Open the GPU benchmark in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
+  </a>
+  &nbsp;<sub>Reproduce the MedGemma benchmark on a free GPU</sub>
+</p>
+
 > ### ⚠️ Read this before you use or deploy this
 >
 > **PlainMed is a research prototype. It is not a medical device, it is not
@@ -289,6 +296,12 @@ Offline processing reduces transmission risk; it does not by itself secure the
 device or guarantee memory is scrubbed.
 
 ## Evaluation
+
+**Reproduce the GPU numbers yourself:** open
+[`notebooks/benchmark_colab.ipynb`](notebooks/benchmark_colab.ipynb) in Colab
+(badge above). It runs MedGemma at 4-bit and 8-bit on a free T4 and reports
+latency, peak VRAM, and the share of generated statements the validator
+rejected — a direct quality signal for each quantization level.
 
 `python scripts/offline_check.py` reports, per synthetic sample: values
 extracted, cards produced, summary items, backend used, and validation errors.
