@@ -316,10 +316,11 @@ class MedGemmaBackend:
         messages = [
             {"role": "user", "content": [{"type": "text", "text": prompt}]}
         ]
-        # MedGemma 1.5 emits a reasoning trace by default, which consumes the
-        # whole token budget before it reaches the answer. Ask the template to
-        # skip it; not every template accepts the flag, so this is best effort
-        # and _strip_thinking() cleans up whatever still gets through.
+        # MedGemma 1.5 emits a reasoning trace before its answer. There is no
+        # supported flag to turn it off on this processor - `enable_thinking`
+        # is accepted and ignored, and only produces warnings - so the trace
+        # is budgeted for (max_new_tokens) and removed afterwards by
+        # _strip_thinking(). It costs tokens, and therefore latency.
         try:
             inputs = templater.apply_chat_template(
                 messages,
@@ -327,23 +328,7 @@ class MedGemmaBackend:
                 tokenize=True,
                 return_dict=True,
                 return_tensors="pt",
-                enable_thinking=False,
             )
-        except TypeError:
-            try:
-                inputs = templater.apply_chat_template(
-                    messages,
-                    add_generation_prompt=True,
-                    tokenize=True,
-                    return_dict=True,
-                    return_tensors="pt",
-                )
-            except (TypeError, ValueError):
-                inputs = templater.apply_chat_template(
-                    [{"role": "user", "content": prompt}],
-                    add_generation_prompt=True,
-                    return_tensors="pt",
-                )
         except (TypeError, ValueError):
             # Older templates take a plain string and return a bare tensor.
             inputs = templater.apply_chat_template(
