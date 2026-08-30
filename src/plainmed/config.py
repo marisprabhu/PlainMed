@@ -46,8 +46,12 @@ class AppConfig:
     max_pdf_pages: int = field(
         default_factory=lambda: int(os.environ.get("PLAINMED_MAX_PDF_PAGES", "20"))
     )
+    # 768 was too small once MedGemma's reasoning trace was in play: the
+    # trace consumed the budget and the answer was cut off mid-JSON. Thinking
+    # is now disabled where the template allows it, but headroom is cheap
+    # insurance against a truncated response.
     max_new_tokens: int = field(
-        default_factory=lambda: int(os.environ.get("PLAINMED_MAX_NEW_TOKENS", "768"))
+        default_factory=lambda: int(os.environ.get("PLAINMED_MAX_NEW_TOKENS", "1536"))
     )
     # "auto" prefers the Paddle GPU engine and falls back to the ONNX CPU one.
     ocr_backend: str = field(

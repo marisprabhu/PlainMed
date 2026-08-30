@@ -97,6 +97,30 @@ def _quantization_config(mode: str):
     )
 
 
+# Gemma-family reasoning traces are wrapped in reserved <unusedNN> tokens.
+_THINK_TOKEN_RE = re.compile(r"<unused\d+>")
+
+
+def _strip_thinking(raw: str) -> str:
+    """Drop a model's reasoning trace, keeping what comes after it.
+
+    MedGemma 1.5 prefixes its answer with a "thought" block delimited by
+    reserved tokens. The trace quotes the report back, so it is full of
+    numbers and brace characters - leaving it in place gives the JSON
+    scanner a field of decoys to wade through.
+    """
+    if "<unused" not in raw:
+        return raw
+    # Keep only what follows the final reasoning marker.
+    parts = _THINK_TOKEN_RE.split(raw)
+    tail = parts[-1]
+    # The trace often begins with the literal word "thought"; if the tail is
+    # still the trace itself, fall back to the text after the last "}".
+    if tail.lstrip().startswith("thought") and len(parts) > 1:
+        return tail
+    return tail or raw
+
+
 def _extract_json(raw: str) -> dict:
     """Pull the answer object out of the model output.
 
@@ -108,7 +132,7 @@ def _extract_json(raw: str) -> dict:
     So: strip fences, then try every "{" in turn and keep the first one that
     both parses and looks like the expected response.
     """
-    text = raw.strip()
+    text = _strip_thinking(raw).strip()
 
     # ```json ... ```  or  ``` ... ```
     if "```" in text:
@@ -146,6 +170,14 @@ def _extract_json(raw: str) -> dict:
     for payload in reversed(candidates):
         if "items" in payload and not is_placeholder(payload):
             return payload
+    # A truncated or over-eager model sometimes emits a single item object
+    # rather than the wrapper. Accept it rather than discarding a usable
+    # statement over its packaging.
+    for payload in reversed(candidates):
+        if "text" in payload and "span_ids" in payload and not is_placeholder(
+            {"items": [payload]}
+        ):
+            return {"items": [payload]}
     if candidates:
         return candidates[-1]
 
@@ -284,6 +316,10 @@ class MedGemmaBackend:
         messages = [
             {"role": "user", "content": [{"type": "text", "text": prompt}]}
         ]
+        # MedGemma 1.5 emits a reasoning trace by default, which consumes the
+        # whole token budget before it reaches the answer. Ask the template to
+        # skip it; not every template accepts the flag, so this is best effort
+        # and _strip_thinking() cleans up whatever still gets through.
         try:
             inputs = templater.apply_chat_template(
                 messages,
@@ -291,7 +327,23 @@ class MedGemmaBackend:
                 tokenize=True,
                 return_dict=True,
                 return_tensors="pt",
+                enable_thinking=False,
             )
+        except TypeError:
+            try:
+                inputs = templater.apply_chat_template(
+                    messages,
+                    add_generation_prompt=True,
+                    tokenize=True,
+                    return_dict=True,
+                    return_tensors="pt",
+                )
+            except (TypeError, ValueError):
+                inputs = templater.apply_chat_template(
+                    [{"role": "user", "content": prompt}],
+                    add_generation_prompt=True,
+                    return_tensors="pt",
+                )
         except (TypeError, ValueError):
             # Older templates take a plain string and return a bare tensor.
             inputs = templater.apply_chat_template(
