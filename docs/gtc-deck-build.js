@@ -1,8 +1,10 @@
 const pptxgen = require("pptxgenjs");
 
-const NAVY="16324F", TEAL="0F766E", MINT="2DD4BF", OFFW="F8FAFC", WHITE="FFFFFF",
-      AMBER="D97706", SLATE="64748B", LSLATE="94A3B8", BORDER="E2E8F0",
-      CARD="1E4160", CARDLINE="2A5578", GOOGLE="4285F4", NVIDIA="76B900";
+// Palette taken from the PlainMed logo: deep navy through the bright
+// blue of the "med" wordmark.
+const NAVY="17335E", TEAL="1565C0", MINT="5FA8F5", OFFW="F6F8FC", WHITE="FFFFFF",
+      AMBER="C2670A", SLATE="5C6B82", LSLATE="A9C9F0", BORDER="DCE4F0",
+      CARD="1E4272", CARDLINE="2C5590", GOOGLE="4285F4", NVIDIA="76B900";
 
 const H="Cambria", B="Calibri";
 
@@ -252,15 +254,15 @@ function card(s,x,y,w,h,opt){
 /* ============================================================== 7 NVIDIA */
 {
   const s=pres.addSlide(); s.background={color:NAVY};
-  title(s,"Served on NVIDIA, priced like a rounding error","NVIDIA",true);
-  s.addText("The same model behind a TensorRT-LLM engine, without inference concerns leaking into application code.",
+  title(s,"We measured the naive baseline. It is the argument.","NVIDIA",true);
+  s.addText("MedGemma 1.5 4B, measured on a T4 with HuggingFace transformers and bitsandbytes NF4 — deliberately the unoptimised path.",
     {x:0.7,y:1.74,w:11.7,h:0.4,isTextBox:true,margin:0,fontFace:B,fontSize:14.5,color:LSLATE});
 
   const items=[
-    {t:"NIM / TensorRT-LLM",d:"FP8, XQA and paged attention behind an OpenAI-compatible API"},
-    {t:"4-bit NF4 weights",d:"A 4B model onto a 16 GB commodity card, roughly halving hourly cost"},
-    {t:"One GPU, two jobs",d:"PaddleOCR and MedGemma share the accelerator — a scan needs one, not two"},
-    {t:"Degrades, never fails",d:"No GPU available? Validated template explanations still ship"}
+    {t:"3.23 GB peak — measured",d:"MedGemma 4B at NF4. Fits a 16 GB commodity card with headroom to spare"},
+    {t:"121 s per report — measured",d:"On a T4 with naive HF serving. Turing has no native 4-bit kernel"},
+    {t:"Most of that is reasoning",d:"MedGemma emits a thinking trace we cannot disable on this runtime"},
+    {t:"That gap is what NIM closes",d:"TensorRT-LLM: FP8, XQA, paged attention. Built and configured, not yet measured"}
   ];
   items.forEach((it,i)=>{
     const x=0.7+(i%2)*6.05, y=2.45+Math.floor(i/2)*1.62;
@@ -273,10 +275,10 @@ function card(s,x,y,w,h,opt){
   });
 
   card(s,0.7,5.85,11.9,1.05,{fill:"14503F",line:MINT});
-  s.addText("Because the GPU never sees patient data, it does not need a compliance-grade host — so inference costs a fraction of a cent per report.",
+  s.addText("3.23 GB is the number that matters: it puts MedGemma on the cheap GPU our architecture already keeps patient data away from.",
     {x:1.0,y:6.1,w:11.3,h:0.5,isTextBox:true,margin:0,fontFace:B,fontSize:14.5,
      bold:true,color:MINT});
-  s.addNotes("GPU cost will not be the constraint; idle capacity will. Fill in the measured latency and peak VRAM before presenting.");
+  s.addNotes("These are our own measurements on Colab's free T4, not estimates. The 121s is the naive path; that is the point. Ask is GPU access to measure the TensorRT-LLM half.");
 }
 
 /* =============================================== 8 INDIA AND LANGUAGES */
@@ -327,12 +329,12 @@ function card(s,x,y,w,h,opt){
 /* ============================================================ 9 EVIDENCE */
 {
   const s=pres.addSlide(); s.background={color:OFFW};
-  title(s,"None of this is a claim. Watch it run.","Evidence",false);
+  title(s,"None of this is a claim. All of it is measured.","Evidence",false);
 
   const stats=[
-    {v:"132",l:"tests passing",s:"parser, validation,\nOCR, security"},
-    {v:"1.3 s",l:"photo to values",s:"CPU only, before\nany GPU"},
-    {v:"3",l:"proofs in CI",s:"offline, retention,\nde-identification"},
+    {v:"149",l:"tests passing",s:"parser, validation,\nOCR, security"},
+    {v:"5 / 5",l:"reports explained",s:"MedGemma on a\nGPU, end to end"},
+    {v:"0 / 23",l:"statements rejected",s:"validator accepted\nevery one"},
     {v:"0",l:"bytes stored",s:"verified from\noutside the app"}
   ];
   stats.forEach((st,i)=>{
@@ -363,7 +365,7 @@ function card(s,x,y,w,h,opt){
     s.addText(r[2],{x:11.2,y:y,w:1.2,h:0.56,isTextBox:true,margin:0,valign:"middle",
       align:"right",fontFace:"Courier New",fontSize:11.5,color:TEAL});
   });
-  s.addNotes("Run these live. Terminal printing PASS in under a second beats a bullet point claiming the same thing.");
+  s.addNotes("Run the three checks live. Then note the model numbers are ours, from a free Colab T4 - reproducible from the notebook in the repo.");
 }
 
 /* =============================================================== 10 ASK */
@@ -378,9 +380,9 @@ function card(s,x,y,w,h,opt){
     {x:0.9,y:3.25,w:9.4,h:0.4,isTextBox:true,margin:0,fontFace:B,fontSize:16,color:MINT});
 
   const st=[
-    {k:"Working today",v:"Camera to explanation, 132 tests, 3 safety proofs green in CI"},
-    {k:"Next 60 days",v:"MedGemma on NVIDIA GPUs, clinician review, 5 more Indian languages"},
-    {k:"The ask",v:"GPU access to move from validated architecture to measured performance"}
+    {k:"Working today",v:"Camera to explanation on a GPU. 149 tests, 3 safety proofs green in CI"},
+    {k:"Measured ourselves",v:"3.23 GB peak, 121 s/report naive, 0 of 23 statements rejected — free Colab T4"},
+    {k:"The ask",v:"GPU access to measure the TensorRT-LLM half of that comparison"}
   ];
   st.forEach((r,i)=>{
     const y=4.05+i*0.78;
